@@ -16,6 +16,11 @@ export const getUserById = async (req, res) => {
 
     res.send({ data: user });
   } catch (err) {
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: 'User is not found' });
+      return;
+    }
+
     res.status(500).send({ message: err.message });
   }
 };
@@ -43,15 +48,27 @@ export const deleteUser = async (req, res) => {
 };
 
 export const editUser = async (req, res) => {
-  const { user: { _id } } = req;
-  const { body: { name, about } } = req;
-  const user = await User.findByIdAndUpdate(_id, { name, about }, { new: true });
-  res.send({ data: user });
+  try {
+    const { user: { _id } } = req;
+    const { body: { name, about } } = req;
+    const user = await User.findByIdAndUpdate(
+      _id,
+      { name, about },
+      { new: true, runValidators: true },
+    );
+    res.send({ data: user });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 export const editUserAvatar = async (req, res) => {
-  const { user: { _id } } = req;
-  const { body: { avatar } } = req;
-  const user = await User.findByIdAndUpdate(_id, { avatar }, { new: true });
-  res.send({ data: user });
+  try {
+    const { user: { _id } } = req;
+    const { body: { avatar } } = req;
+    const user = await User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true });
+    res.send({ data: user });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };

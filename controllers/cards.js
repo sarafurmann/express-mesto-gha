@@ -7,9 +7,10 @@ export const getCards = async (req, res) => {
 
 export const createCard = async (req, res) => {
   try {
-    const { body: { name, link, owner } } = req;
+    const { user: { _id } } = req;
+    const { body: { name, link } } = req;
 
-    const card = await Card.create({ name, link, owner });
+    const card = await Card.create({ name, link, owner: _id });
 
     res.send({ data: card });
   } catch (err) {
@@ -28,23 +29,41 @@ export const deleteCard = async (req, res) => {
 };
 
 export const likeCard = async (req, res) => {
-  const { user: { _id } } = req;
-  const card = await Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: _id } },
-    { new: true },
-  );
+  try {
+    const { user: { _id } } = req;
+    const card = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: _id } },
+      { new: true },
+    );
 
-  res.send({ data: card });
+    res.send({ data: card });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: 'Card is not found' });
+      return;
+    }
+
+    res.status(500).send({ message: err.message });
+  }
 };
 
 export const dislikeCard = async (req, res) => {
-  const { user: { _id } } = req;
-  const card = await Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: _id } },
-    { new: true },
-  );
+  try {
+    const { user: { _id } } = req;
+    const card = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: _id } },
+      { new: true },
+    );
 
-  res.send({ data: card });
+    res.send({ data: card });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: 'Card is not found' });
+      return;
+    }
+
+    res.status(500).send({ message: err.message });
+  }
 };

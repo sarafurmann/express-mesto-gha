@@ -26,6 +26,10 @@ app.use((req, res, next) => {
 app.use('/cards', cardRouter);
 app.use('/users', userRouter);
 
+app.use((req, res, next) => {
+  next(res.status(404).send({ message: 'Страницы по запрошенному URL не существует' }));
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
