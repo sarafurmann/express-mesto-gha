@@ -6,8 +6,18 @@ export const getUserss = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-  const user = await User.findById(req.params.userId);
-  res.send({ data: user });
+  try {
+    const user = await User.findById(req.params.userId);
+
+    if (!user) {
+      res.status(404).send({ message: 'User is not found' });
+      return;
+    }
+
+    res.send({ data: user });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 export const createUser = async (req, res) => {
