@@ -24,8 +24,23 @@ export const createCard = async (req, res) => {
 };
 
 export const deleteCard = async (req, res) => {
-  await Card.deleteOne({ _id: req.params.cardId });
-  res.send({ data: 'Card is deleted' });
+  try {
+    const card = await Card.deleteOne({ _id: req.params.cardId });
+
+    if (!card) {
+      res.status(404).send({ message: 'Card is not found' });
+      return;
+    }
+
+    res.send({ data: 'Card is deleted' });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      res.status(400).send({ message: err.message });
+      return;
+    }
+
+    res.status(500).send({ message: err.message });
+  }
 };
 
 export const likeCard = async (req, res) => {
@@ -37,10 +52,15 @@ export const likeCard = async (req, res) => {
       { new: true },
     );
 
+    if (!card) {
+      res.status(404).send({ message: 'Card is not found' });
+      return;
+    }
+
     res.send({ data: card });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: 'Card is not found' });
+      res.status(400).send({ message: err.message });
       return;
     }
 
@@ -57,10 +77,15 @@ export const dislikeCard = async (req, res) => {
       { new: true },
     );
 
+    if (!card) {
+      res.status(404).send({ message: 'Card is not found' });
+      return;
+    }
+
     res.send({ data: card });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: 'Card is not found' });
+      res.status(400).send({ message: err.message });
       return;
     }
 
