@@ -17,7 +17,7 @@ export const getUserById = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: 'User is not found' });
+      res.status(400).send({ message: 'User is not found' });
       return;
     }
 
@@ -58,6 +58,11 @@ export const editUser = async (req, res) => {
     );
     res.send({ data: user });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: err.message });
+      return;
+    }
+
     res.status(500).send({ message: err.message });
   }
 };
@@ -69,6 +74,11 @@ export const editUserAvatar = async (req, res) => {
     const user = await User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true });
     res.send({ data: user });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: err.message });
+      return;
+    }
+
     res.status(500).send({ message: err.message });
   }
 };
