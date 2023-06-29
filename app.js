@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import cardRouter from './routes/cards';
 import userRouter from './routes/users';
 
-const { PORT = 8080 } = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
