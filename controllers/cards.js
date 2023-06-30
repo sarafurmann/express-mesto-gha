@@ -1,3 +1,4 @@
+import { BAD_REQUEST_ERROR, INTERNAL_SERVER_ERROR, NOT_FOUND_ERROR } from '../errors';
 import Card from '../models/card';
 
 export const getCards = async (req, res) => {
@@ -15,11 +16,11 @@ export const createCard = async (req, res) => {
     res.send({ data: card });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };
 
@@ -28,18 +29,18 @@ export const deleteCard = async (req, res) => {
     const { deletedCount } = await Card.deleteOne({ _id: req.params.cardId });
 
     if (!deletedCount) {
-      res.status(404).send({ message: 'Card is not found' });
+      res.status(NOT_FOUND_ERROR).send({ message: 'Card is not found' });
       return;
     }
 
     res.send({ data: 'Card is deleted' });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };
 
@@ -53,18 +54,18 @@ export const likeCard = async (req, res) => {
     );
 
     if (!card) {
-      res.status(404).send({ message: 'Card is not found' });
+      res.status(NOT_FOUND_ERROR).send({ message: 'Card is not found' });
       return;
     }
 
     res.send({ data: card });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };
 
@@ -78,17 +79,17 @@ export const dislikeCard = async (req, res) => {
     );
 
     if (!card) {
-      res.status(404).send({ message: 'Card is not found' });
+      res.status(NOT_FOUND_ERROR).send({ message: 'Card is not found' });
       return;
     }
 
     res.send({ data: card });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };

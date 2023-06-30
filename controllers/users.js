@@ -1,3 +1,4 @@
+import { BAD_REQUEST_ERROR, INTERNAL_SERVER_ERROR, NOT_FOUND_ERROR } from '../errors';
 import User from '../models/user';
 
 export const getUserss = async (req, res) => {
@@ -10,18 +11,18 @@ export const getUserById = async (req, res) => {
     const user = await User.findById(req.params.userId);
 
     if (!user) {
-      res.status(404).send({ message: 'User is not found' });
+      res.status(NOT_FOUND_ERROR).send({ message: 'User is not found' });
       return;
     }
 
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'User is not found' });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };
 
@@ -34,17 +35,12 @@ export const createUser = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
-};
-
-export const deleteUser = async (req, res) => {
-  await User.deleteOne({ _id: req.params.userId });
-  res.send({ data: 'User is deleted' });
 };
 
 export const editUser = async (req, res) => {
@@ -59,11 +55,11 @@ export const editUser = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };
 
@@ -75,10 +71,10 @@ export const editUserAvatar = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
       return;
     }
 
-    res.status(500).send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
   }
 };

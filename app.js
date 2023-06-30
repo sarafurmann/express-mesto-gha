@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cardRouter from './routes/cards';
 import userRouter from './routes/users';
+import { NOT_FOUND_ERROR } from './errors';
 
 const { PORT = 3000 } = process.env;
 
@@ -27,7 +28,7 @@ app.use('/cards', cardRouter);
 app.use('/users', userRouter);
 
 app.use((req, res, next) => {
-  next(res.status(404).send({ message: 'Страницы по запрошенному URL не существует' }));
+  next(res.status(NOT_FOUND_ERROR).send({ message: 'Страницы по запрошенному URL не существует' }));
 });
 
 app.listen(PORT, () => {
