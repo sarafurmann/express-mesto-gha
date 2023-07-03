@@ -26,7 +26,7 @@ export const createCard = async (req, res) => {
 
 export const deleteCard = async (req, res) => {
   try {
-    const { deletedCount } = await Card.deleteOne({ _id: req.params.cardId });
+    const { deletedCount } = await Card.deleteOne({ _id: req.params.cardId, owner: req.user._id });
 
     if (!deletedCount) {
       res.status(NOT_FOUND_ERROR).send({ message: 'Card is not found' });
