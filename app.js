@@ -2,11 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import { errors, celebrate, Joi } from 'celebrate';
 import cardRouter from './routes/cards';
 import userRouter from './routes/users';
-import { NOT_FOUND_ERROR } from './errors';
 import auth from './middlewares/auth';
 import { login, createUser } from './controllers/users';
+import NotFoundError from './errors/not-found-error';
 
 const { PORT = 3000 } = process.env;
 
@@ -20,11 +21,39 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use('/cards', auth, cardRouter);
 app.use('/users', auth, userRouter);
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.email().required(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login,
+);
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().required().min(2).max(30),
+      avatar: Joi.string().required(),
+      email: Joi.email().required(),
+      password: Joi.string().required(),
+    }),
+  }),
+  createUser,
+);
 
 app.use((req, res, next) => {
-  next(res.status(NOT_FOUND_ERROR).send({ message: 'Страницы по запрошенному URL не существует' }));
+  next(new NotFoundError('Страницы по запрошенному URL не существует'));
+});
+
+app.use(errors());
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
 });
 
 app.listen(PORT, () => {

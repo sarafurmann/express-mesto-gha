@@ -1,54 +1,57 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { BAD_REQUEST_ERROR, INTERNAL_SERVER_ERROR, NOT_FOUND_ERROR } from '../errors';
 import User from '../models/user';
+import BadRequestError from '../errors/bad-request-error';
+import InternalServerError from '../errors/internal-server-error';
+import NotFoundError from '../errors/not-found-error';
+import NotAuthorizedError from '../errors/not-authorized-error';
 
 export const getUserss = async (req, res) => {
   const users = await User.find({});
   res.send({ data: users });
 };
 
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
 
     if (!user) {
-      res.status(NOT_FOUND_ERROR).send({ message: 'User is not found' });
+      next(new NotFoundError('User is not found'));
       return;
     }
 
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
+      next(new BadRequestError('Bad request error'));
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
+    next(new InternalServerError('Server error'));
   }
 };
 
-export const getUserInfo = async (req, res) => {
+export const getUserInfo = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      res.status(NOT_FOUND_ERROR).send({ message: 'User is not found' });
+      next(new NotFoundError('User is not found'));
       return;
     }
 
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
+      next(new BadRequestError('Bad request error'));
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
+    next(new InternalServerError('Server error'));
   }
 };
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
     const {
       body: {
@@ -64,15 +67,15 @@ export const createUser = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
+      next(new BadRequestError('Bad request error'));
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
+    next(new InternalServerError('Server error'));
   }
 };
 
-export const editUser = async (req, res) => {
+export const editUser = async (req, res, next) => {
   try {
     const { user: { _id } } = req;
     const { body: { name, about } } = req;
@@ -84,15 +87,15 @@ export const editUser = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
+      next(new BadRequestError('Bad request error'));
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
+    next(new InternalServerError('Server error'));
   }
 };
 
-export const editUserAvatar = async (req, res) => {
+export const editUserAvatar = async (req, res, next) => {
   try {
     const { user: { _id } } = req;
     const { body: { avatar } } = req;
@@ -100,15 +103,15 @@ export const editUserAvatar = async (req, res) => {
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR).send({ message: 'Bad request error' });
+      next(new BadRequestError('Bad request error'));
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'Server Error' });
+    next(new InternalServerError('Server error'));
   }
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -117,8 +120,6 @@ export const login = async (req, res) => {
       token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
     });
   } catch (err) {
-    res
-      .status(401)
-      .send({ message: err.message });
+    next(new NotAuthorizedError(err.message));
   }
 };
