@@ -9,8 +9,16 @@ import { URL_REGEX } from '../constants';
 const router = Router();
 
 router.get('/', getUserss);
-router.get('/:userId', getUserById);
 router.get('/me', getUserInfo);
+router.get(
+  '/:userId',
+  celebrate({
+    params: {
+      userId: Joi.string().length(24).hex().required(),
+    },
+  }),
+  getUserById,
+);
 router.patch(
   '/me',
   celebrate({
