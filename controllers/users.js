@@ -5,6 +5,7 @@ import BadRequestError from '../errors/bad-request-error';
 import InternalServerError from '../errors/internal-server-error';
 import NotFoundError from '../errors/not-found-error';
 import NotAuthorizedError from '../errors/not-authorized-error';
+import ConflictError from '../errors/conflict-error';
 
 export const getUserss = async (req, res) => {
   const users = await User.find({});
@@ -64,14 +65,27 @@ export const createUser = async (req, res, next) => {
       name, about, avatar, password: hash, email,
     });
 
-    res.send({ data: user });
+    res.send({
+      data: {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+        _id: user._id,
+      },
+    });
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new BadRequestError('Bad request error'));
       return;
     }
 
-    next(new InternalServerError('Server error'));
+    if (err.name === 'MongoServerError') {
+      next(new ConflictError('Conflict error'));
+      return;
+    }
+
+    next(new InternalServerError(err));
   }
 };
 
