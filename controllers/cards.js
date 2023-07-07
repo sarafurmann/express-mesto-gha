@@ -2,6 +2,7 @@ import Card from '../models/card';
 import BadRequestError from '../errors/bad-request-error';
 import InternalServerError from '../errors/internal-server-error';
 import NotFoundError from '../errors/not-found-error';
+import ForbiddenError from '../errors/forbidden-error';
 
 export const getCards = async (req, res) => {
   const cards = await Card.find({});
@@ -28,12 +29,18 @@ export const createCard = async (req, res, next) => {
 
 export const deleteCard = async (req, res, next) => {
   try {
-    const { deletedCount } = await Card.deleteOne({ _id: req.params.cardId, owner: req.user._id });
+    const card = await Card.findById(req.params.cardId);
 
-    if (!deletedCount) {
+    if (!card) {
       next(new NotFoundError('Card is not found'));
       return;
     }
+
+    if (req.user._id !== card.owner) {
+      next(new ForbiddenError('Forbidden error'));
+    }
+
+    await card.remove();
 
     res.send({ data: 'Card is deleted' });
   } catch (err) {
