@@ -40,7 +40,7 @@ export const deleteCard = async (req, res, next) => {
       next(new ForbiddenError('Forbidden error'));
     }
 
-    await Card.deleteOne({ id: req.params.cardId });
+    await Card.deleteOne({ _id: req.params.cardId });
 
     res.send({ data: 'Card is deleted' });
   } catch (err) {
