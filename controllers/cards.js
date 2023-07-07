@@ -40,10 +40,11 @@ export const deleteCard = async (req, res, next) => {
       next(new ForbiddenError('Forbidden error'));
     }
 
-    await card.remove();
+    await Card.deleteOne({ id: req.params.cardId });
 
     res.send({ data: 'Card is deleted' });
   } catch (err) {
+    console.log(err);
     if (err.name === 'CastError') {
       next(new BadRequestError('Bad request error'));
       return;
