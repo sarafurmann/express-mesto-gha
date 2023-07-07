@@ -4,6 +4,7 @@ import { celebrate, Joi } from 'celebrate';
 import {
   getUserss, getUserById, editUser, editUserAvatar, getUserInfo,
 } from '../controllers/users';
+import { URL_REGEX } from '../constants';
 
 const router = Router();
 
@@ -24,7 +25,7 @@ router.patch(
   '/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().uri().required(),
+      avatar: Joi.string().pattern(URL_REGEX).required(),
     }),
   }),
   editUserAvatar,

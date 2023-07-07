@@ -8,6 +8,7 @@ import userRouter from './routes/users';
 import auth from './middlewares/auth';
 import { login, createUser } from './controllers/users';
 import NotFoundError from './errors/not-found-error';
+import { URL_REGEX } from './constants';
 
 const { PORT = 3000 } = process.env;
 
@@ -37,7 +38,7 @@ app.post(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().uri(),
+      avatar: Joi.string().pattern(URL_REGEX),
       email: Joi.string().email().required(),
       password: Joi.string().required(),
     }),
