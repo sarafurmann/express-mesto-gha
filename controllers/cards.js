@@ -36,7 +36,7 @@ export const deleteCard = async (req, res, next) => {
       return;
     }
 
-    if (req.user._id !== card.owner) {
+    if (req.user._id !== card.owner._id) {
       next(new ForbiddenError('Forbidden error'));
     }
 
