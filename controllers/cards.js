@@ -38,13 +38,13 @@ export const deleteCard = async (req, res, next) => {
 
     if (req.user._id !== card.owner.valueOf()) {
       next(new ForbiddenError('Forbidden error'));
+      return;
     }
 
-    await Card.deleteOne({ _id: req.params.cardId });
+    await card.deleteOne();
 
     res.send({ data: 'Card is deleted' });
   } catch (err) {
-    console.log(err);
     if (err.name === 'CastError') {
       next(new BadRequestError('Bad request error'));
       return;

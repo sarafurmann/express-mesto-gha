@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import { errors, celebrate, Joi } from 'celebrate';
 import cardRouter from './routes/cards';
@@ -15,8 +14,8 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 

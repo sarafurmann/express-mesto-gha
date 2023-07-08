@@ -7,9 +7,13 @@ import NotFoundError from '../errors/not-found-error';
 import NotAuthorizedError from '../errors/not-authorized-error';
 import ConflictError from '../errors/conflict-error';
 
-export const getUserss = async (req, res) => {
-  const users = await User.find({});
-  res.send({ data: users });
+export const getUserss = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    res.send({ data: users });
+  } catch (err) {
+    next(new InternalServerError('Server error'));
+  }
 };
 
 export const getUserById = async (req, res, next) => {
@@ -43,11 +47,6 @@ export const getUserInfo = async (req, res, next) => {
 
     res.send({ data: user });
   } catch (err) {
-    if (err.name === 'CastError') {
-      next(new BadRequestError('Bad request error'));
-      return;
-    }
-
     next(new InternalServerError('Server error'));
   }
 };
@@ -80,7 +79,7 @@ export const createUser = async (req, res, next) => {
       return;
     }
 
-    if (err.name === 'MongoServerError') {
+    if (err.code === 11000) {
       next(new ConflictError('Conflict error'));
       return;
     }
